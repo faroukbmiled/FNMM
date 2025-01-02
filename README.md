@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced Fortnite Matchmaking/Lobby bot, Powerd by [fnbr.js](https://github.com/fnbrjs/fnbr.js)
+An experimental Fortnite Matchmaking/Lobby bot, Powerd by [fnbr.js](https://github.com/fnbrjs/fnbr.js)
 
 ## Setup
 
@@ -28,3 +28,8 @@ npm run start
 
 ### Available Commands
 For a list of available in-game and Discord commands, refer to the [Commands Documentation](md/COMMANDS.md).
+
+## Credits:
+- Orignal code by: AjaxFNC
+- Discord: [NexBL](https://discord.gg/nexbl)
+- *Note: Please do not request support in this discord server
