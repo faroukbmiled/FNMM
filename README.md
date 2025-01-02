@@ -1,7 +1,7 @@
 # FNMM
+[![Run on Replit](https://replit.com/badge?caption=FNMM%20Replit)](https://replit.com/@DeathN0te/FNMM)
 
 ## Overview
-
 An experimental Fortnite Matchmaking/Lobby bot, Powerd by [fnbr.js](https://github.com/fnbrjs/fnbr.js)
 
 ## Setup
