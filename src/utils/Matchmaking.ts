@@ -215,6 +215,7 @@ export async function startMatchmaking(
     }
 
     matchmakingClient.on("error", (err: string) => {
+      bIsMatchmaking = false;
       console.log(`[Matchmaking] Error: ${err}`);
     })
 
@@ -224,11 +225,12 @@ export async function startMatchmaking(
         console.log(`[Matchmaking] Message from the matchmaker`, message);
       }
 
-      if (message.name === "Error") {
+      if (message.name?.toLowerCase().includes("error")) {
         bIsMatchmaking = false;
       }
     });
   } catch (error) {
+    bIsMatchmaking = false;
     console.error(`Error in matchmaking handling: ${error}`);
   }
 }

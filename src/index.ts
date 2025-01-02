@@ -64,7 +64,7 @@ setUpDClient();
     100,
     100
   );
-  await client?.party?.me?.setBanner(config.fortnite.eid, "black");
+  await client?.party?.me?.setBanner(config.fortnite.banner, "black");
   await client?.party?.me.setBackpack(config.fortnite.bid);
 
   setupInteractionHandler(
@@ -121,24 +121,36 @@ setUpDClient();
 
       case "BattleRoyaleMatchmaking": {
         if (bIsMatchmaking) {
-          console.log("Members has started matchmaking!");
-          if (config.logs.enable_logs === true) {
-            discordlog(
-              "[Logs] Matchmaking",
-              "Members started Matchmaking!",
-              0x00ffff
-            );
-          } else return;
+          console.log("Members already started matchmaking!");
           return;
         }
 
-        bIsMatchmaking = true;
         if (bLog) {
           console.log(`[${"Matchmaking"}]`, "Matchmaking Started");
         }
 
+        if (config.logs.enable_logs === true) {
+          discordlog(
+            "[Logs] Matchmaking",
+            "Members started Matchmaking!",
+            0x00ffff
+          );
+        }
+
+        bIsMatchmaking = true;
+
         // Initiate matchmaking websocket and its event listeners
         startMatchmaking(client, updatedParty, bLog, bIsMatchmaking);
+
+        setTimeout(() => {
+          if (bIsMatchmaking) {
+            if (client.party?.me?.isReady) {
+              client.party.me.setReadiness(false).catch((e) => console.log(e));
+            }
+            bIsMatchmaking = false;
+          }
+        }, 30000);
+
         break;
       }
 
@@ -374,7 +386,7 @@ setUpDClient();
 
         await client?.party?.fetch();
 
-        // client?.party?.me.setEmote(config.fortnite.eid);
+        client?.party?.me.setEmote(config.fortnite.eid).catch((e) => console.log(e));
 
         switch (party?.size) {
           case 1:

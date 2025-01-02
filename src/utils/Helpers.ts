@@ -37,15 +37,24 @@ export async function discordlog(
       await (channel as any).send({ embeds: [logs] });
     }
   } catch (e) {
-    if (interaction) {
-      const channelid = interaction.channelId;
-      const fallBack = dclient.channels.cache.get(channelid);
-      console.log("error triggered fallback: ", channelid);
-      await (fallBack as any).send({ embeds: [logs] });
-    } else {
-      await (channel as any).send({ embeds: [logs] });
-    }
     console.log(e);
+    try {
+      if (interaction) {
+        const channelid = interaction.channelId;
+        const fallBack = dclient.channels.cache.get(channelid);
+        console.log("error triggered fallback: ", channelid);
+        await (fallBack as any).send({ embeds: [logs] });
+      } else {
+        await (channel as any).send({ embeds: [logs] });
+      }
+    } catch (e) {
+      console.log(
+        "Failed to send discord log, restart the bot and verify your config " +
+        "(channel id / guild id / discord bot token (env variable))\n" +
+        "If you're not using the discord bot, set 'run_discord_client' in config to false"
+      );
+      console.log(e);
+    }
   }
 }
 
