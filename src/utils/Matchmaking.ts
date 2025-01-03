@@ -76,8 +76,10 @@ export async function startMatchmaking(
     console.log(partyPlayerIds);
 
     const query = new URLSearchParams();
+    // credits: Updated by AjaxFNC-YT
     query.append("partyPlayerIds", partyPlayerIds ?? "");
     query.append("player.platform", "Windows");
+    query.append("player.option.linkCode", playlistId.toString());
     query.append(
       "player.option.partyId",
       client.party?.id ? client.party?.id : ""
@@ -85,6 +87,12 @@ export async function startMatchmaking(
     query.append("input.KBM", "true");
     query.append("player.input", "KBM");
     query.append("bucketId", bucketId);
+    query.append("player.option.preserveSquad", "false");
+    query.append("player.option.crossplayOptOut", "false");
+    query.append("player.option.splitScreen", "false");
+    query.append("party.WIN", "true");
+    query.append("player.option.microphoneEnabled", "false");
+    query.append("player.option.uiLanguage", "en");
 
     client?.party?.members
       .filter((x: PartyMember) => x.isReady)

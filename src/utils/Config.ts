@@ -15,6 +15,7 @@ export const config: Config = {
     battle_pass_lvl: nconf.get("fortnite:battle_pass_lvl"),
     banner: nconf.get("fortnite:banner"),
     add_users: nconf.get("fortnite:add_users"),
+    leave_party: nconf.get("fortnite:leave_party"),
     leave_time: nconf.get("fortnite:leave_time"),
     join_message: nconf.get("fortnite:join_message"),
     invite_status: nconf.get("fortnite:invite_status"),

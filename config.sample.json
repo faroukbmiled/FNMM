@@ -14,7 +14,8 @@
     "invite_onlinetype": "online",
     "inuse_status": "",
     "inuse_onlinetype": "online",
-    "owner_epicid": ""
+    "owner_epicid": "",
+    "leave_party": false
   },
 
   "logs": {

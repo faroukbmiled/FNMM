@@ -1,4 +1,6 @@
 import axios, { AxiosError } from "axios";
+import { Express } from "express";
+import { ExpressApp } from "./utils/Express.js";
 import os from "os";
 import fnbr, {
     ClientParty,
@@ -10,16 +12,16 @@ import fnbr, {
 } from "fnbr";
 import {
     discordlog,
-    UpdateCosmetics,
-    findCosmetic,
+    // UpdateCosmetics,
+    // findCosmetic,
     sleep,
 } from "./utils/Helpers.js";
 import {
     config,
     PrivateParty,
 } from "./utils/Config.js";
-import { dclient, setUpDClient } from "./utils/discordClient.js";
-import setupInteractionHandler from "./utils/interactionHandler.js";
+// import { dclient, setUpDClient } from "./utils/discordClient.js";
+// import setupInteractionHandler from "./utils/interactionHandler.js";
 import { handleCommand } from "./utils/commandHandler.js";
 import { startMatchmaking } from "./utils/Matchmaking.js";
 import type { AxiosErrorResponseData } from "./utils/types.js";
@@ -141,41 +143,47 @@ class FortniteBot {
     }
 
     private async handlePartyMemberUpdate(Member: ClientPartyMember | PartyMember) {
-        if (Member.id == this.client?.user?.self?.id) {
-            return;
-        }
-
-        if (!this.client?.party?.me) {
-            return;
-        }
-
-        if (
-            Member.isReady &&
-            (this.client?.party?.me?.isLeader || Member.isLeader) &&
-            !this.client.party?.me?.isReady
-        ) {
-            // Ready Up
-            if (this.client.party?.me?.isLeader) {
-                await Member.promote();
+        try {
+            if (Member.id == this.client?.user?.self?.id) {
+                return;
             }
 
-            this.client.party.me.setReadiness(true).catch((e) => console.log(e));
-        } else if (!Member.isReady && Member.isLeader) {
-            this.client.party.me.setReadiness(false).catch((e) => console.log(e));
-        }
+            if (!this.client?.party?.me) {
+                return;
+            }
 
-        var bAllmembersReady = true;
-
-        this.client.party.members.forEach(
-            (member: ClientPartyMember | PartyMember) => {
-                if (!bAllmembersReady) {
-                    return;
+            if ((Member.isReady && (this.client?.party?.me?.isLeader || Member.isLeader) && !this.client.party?.me?.isReady)) {
+                if (this.client.party?.me?.isLeader) {
+                    await Member.promote();
+                }
+                this.client?.party?.me.setReadiness(true);
+            } else if ((!Member.isReady && Member.isLeader) && !this.client?.party) {
+                try {
+                    if (!this.client.xmpp.isConnected) {
+                        this.client.xmpp.disconnect();;
+                    } else {
+                        console.log(`[ERROR] WebSocket connection is not available or already closed.`);
+                    }
+                } catch (e) {
+                    console.log(`[ERROR] ${e}`);
                 }
 
-                bAllmembersReady = member.isReady;
+                this.client?.party?.me.setReadiness(false);
             }
-        );
 
+            var bAllmembersReady = true;
+
+            this.client?.party?.members.forEach(
+                (member: ClientPartyMember | PartyMember) => {
+                    if (!bAllmembersReady) {
+                        return;
+                    }
+
+                    bAllmembersReady = member.isReady;
+                }
+            );
+        }
+        catch (e) { console.log(e) }
     }
 
     private async handlePreloadingState() {
@@ -210,16 +218,41 @@ class FortniteBot {
 
     private async handlePostMatchmakingState() {
         try {
-            console.log("Exiting Party...");
+            if (!this.bIsMatchmaking) return;
+            if (config.logs.enable_logs) {
+                console.log(
+                    `[${"Party"}]`,
+                    "Players entered loading screen, Exiting party..."
+                );
+            }
+            if (config.logs.enable_logs === true) {
+                console.log("Members now in game.")
+                discordlog(
+                    "[Logs] Matchmaking",
+                    "Members now in game.",
+                    0xffa500
+                );
+            } else return;
+
             if (this.client.party?.me?.isReady) {
-                this.client.party.me.setReadiness(false).catch((e) => console.log(e));
+                console.log("trying to set ready to false")
+                this.client.party.me.setReadiness(false).catch((e) => console.log(e));;
+                console.log("set ready to false")
             }
             await sleep(2000);
             this.bIsMatchmaking = false;
-            this.client.party?.leave();
-        } catch (e) {
-            console.log(e);
-        }
+            if (config.fortnite.leave_party) {
+                this.client?.party?.leave();
+                console.log("Leaving party...")
+                discordlog(
+                    "[Logs] Matchmaking",
+                    "Leaving party...",
+                    0xffa500
+                );
+                return;
+            }
+            return;
+        } catch (e) { console.log(e) }
     }
 
     private async handleFriendRequest(request: IncomingPendingFriend) {
@@ -462,6 +495,7 @@ class FortniteBot {
 
 (async () => {
     // testing multi bots in one instance
+    const app: Express = ExpressApp;
     const deviceauths: { accountId: string; deviceId: string; secret: string }[] = [
         {
             accountId: "",

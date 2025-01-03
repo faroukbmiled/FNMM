@@ -298,6 +298,7 @@ export interface FortniteConfig {
   invite_status: string;
   invite_onlinetype: PresenceOnlineType;
   inuse_status: string;
+  leave_party: boolean;
   inuse_onlinetype: PresenceOnlineType;
   owner_epicid: string;
 }

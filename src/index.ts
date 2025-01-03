@@ -31,7 +31,6 @@ import type { AxiosErrorResponseData } from "./utils/types.js";
 
 UpdateCosmetics();
 const app: Express = ExpressApp;
-const bLog: boolean = true;
 let timerstatus: boolean = false;
 let timerId: NodeJS.Timeout | undefined = undefined;
 setUpDClient();
@@ -125,7 +124,7 @@ setUpDClient();
           return;
         }
 
-        if (bLog) {
+        if (config.logs.enable_logs) {
           console.log(`[${"Matchmaking"}]`, "Matchmaking Started");
         }
 
@@ -140,7 +139,7 @@ setUpDClient();
         bIsMatchmaking = true;
 
         // Initiate matchmaking websocket and its event listeners
-        startMatchmaking(client, updatedParty, bLog, bIsMatchmaking);
+        startMatchmaking(client, updatedParty, config.logs.enable_logs, bIsMatchmaking);
 
         setTimeout(() => {
           if (bIsMatchmaking) {
@@ -155,33 +154,42 @@ setUpDClient();
       }
 
       case "BattleRoyalePostMatchmaking": {
-        if (!bIsMatchmaking) return;
-        if (bLog) {
-          console.log(
-            `[${"Party"}]`,
-            "Players entered loading screen, Exiting party..."
-          );
-        }
-        if (config.logs.enable_logs === true) {
-          console.log("Members now in game. leaving party...")
-          discordlog(
-            "[Logs] Matchmaking",
-            "Members now in game. leaving party...",
-            0xffa500
-          );
-        } else return;
+        try {
+          if (!bIsMatchmaking) return;
+          if (config.logs.enable_logs) {
+            console.log(
+              `[${"Party"}]`,
+              "Players entered loading screen, Exiting party..."
+            );
+          }
+          if (config.logs.enable_logs === true) {
+            console.log("Members now in game.")
+            discordlog(
+              "[Logs] Matchmaking",
+              "Members now in game.",
+              0xffa500
+            );
+          } else return;
 
-        if (client.party?.me?.isReady) {
-          console.log("trying to set ready to false")
-          client.party.me.setReadiness(false).catch((e) => console.log(e));;
-          console.log("set ready to false")
-        }
-        await sleep(2000);
-        bIsMatchmaking = false;
-        console.log("trying to leave")
-        client?.party?.leave();
-        console.log("left")
-        break;
+          if (client.party?.me?.isReady) {
+            console.log("trying to set ready to false")
+            client.party.me.setReadiness(false).catch((e) => console.log(e));;
+            console.log("set ready to false")
+          }
+          await sleep(2000);
+          bIsMatchmaking = false;
+          if (config.fortnite.leave_party) {
+            client?.party?.leave();
+            console.log("Leaving party...")
+            discordlog(
+              "[Logs] Matchmaking",
+              "Leaving party...",
+              0xffa500
+            );
+            break;
+          }
+          break;
+        } catch (e) { console.log(e) }
       }
 
       case "BattleRoyaleView": {
@@ -189,7 +197,7 @@ setUpDClient();
       }
 
       default: {
-        if (bLog) {
+        if (config.logs.enable_logs) {
           console.log(
             `[${"Party"}]`,
             "Unknow PartyState",
@@ -208,42 +216,48 @@ setUpDClient();
   client.on(
     "party:member:updated",
     async (Member: ClientPartyMember | PartyMember) => {
-      if (Member.id == client?.user?.self?.id) {
-        return;
-      }
-
-      if (!client?.party?.me) {
-        return;
-      }
-
-      if (
-        Member.isReady &&
-        (client?.party?.me?.isLeader || Member.isLeader) &&
-        !client.party?.me?.isReady
-      ) {
-        // Ready Up
-        if (client.party?.me?.isLeader) {
-          await Member.promote();
+      try {
+        if (Member.id == client?.user?.self?.id) {
+          return;
         }
 
-        client.party.me.setReadiness(true).catch((e) => console.log(e));;
-      } else if (!Member.isReady && Member.isLeader) {
-        client.party.me.setReadiness(false).catch((e) => console.log(e));;
-      }
+        if (!client?.party?.me) {
+          return;
+        }
 
-      var bAllmembersReady = true;
-
-      client.party.members.forEach(
-        (member: ClientPartyMember | PartyMember) => {
-          if (!bAllmembersReady) {
-            return;
+        if ((Member.isReady && (client?.party?.me?.isLeader || Member.isLeader) && !client.party?.me?.isReady)) {
+          if (client.party?.me?.isLeader) {
+            await Member.promote();
+          }
+          client?.party?.me.setReadiness(true);
+        } else if ((!Member.isReady && Member.isLeader) && !client?.party) {
+          try {
+            if (!client.xmpp.isConnected) {
+              client.xmpp.disconnect();;
+            } else {
+              console.log(`[ERROR] WebSocket connection is not available or already closed.`);
+            }
+          } catch (e) {
+            console.log(`[ERROR] ${e}`);
           }
 
-          bAllmembersReady = member.isReady;
+          client?.party?.me.setReadiness(false);
         }
-      );
-    }
-  );
+
+        var bAllmembersReady = true;
+
+        client?.party?.members.forEach(
+          (member: ClientPartyMember | PartyMember) => {
+            if (!bAllmembersReady) {
+              return;
+            }
+
+            bAllmembersReady = member.isReady;
+          }
+        );
+      }
+      catch (e) { console.log(e) }
+    })
 
   client.on("friend:request", async (request: IncomingPendingFriend) => {
     try {

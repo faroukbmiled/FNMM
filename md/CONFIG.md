@@ -80,6 +80,11 @@
   - **Format**: String
   - **Example**: `"a3f5b6d7e8c90f1b23456789ab0cdeff"`
 
+- **`leave_party`**:
+  - **Description**: Whether or not to leave the party after the bot completes matchmaking
+  - **Format**: Boolean
+  - **Example**: `"true"`
+
 ### 2. `logs`
 
 - **`enable_logs`**:
