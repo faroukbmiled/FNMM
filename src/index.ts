@@ -173,7 +173,7 @@ setUpDClient();
 
         if (client.party?.me?.isReady) {
           console.log("trying to set ready to false")
-          client.party.me.setReadiness(false);
+          client.party.me.setReadiness(false).catch((e) => console.log(e));;
           console.log("set ready to false")
         }
         await sleep(2000);
@@ -204,7 +204,6 @@ setUpDClient();
   client.on("friend:message", (m: ReceivedFriendMessage) =>
     handleCommand(m, m.author, client, timerstatus, timerId)
   );
-  //  client.on('party:member:message', (m) => handleCommand(m, m.author));
 
   client.on(
     "party:member:updated",
@@ -227,9 +226,9 @@ setUpDClient();
           await Member.promote();
         }
 
-        client.party.me.setReadiness(true);
+        client.party.me.setReadiness(true).catch((e) => console.log(e));;
       } else if (!Member.isReady && Member.isLeader) {
-        client.party.me.setReadiness(false);
+        client.party.me.setReadiness(false).catch((e) => console.log(e));;
       }
 
       var bAllmembersReady = true;
@@ -396,7 +395,7 @@ setUpDClient();
             );
             await client?.party?.setPrivacy(PrivateParty).catch((e) => console.log(e));
             if (client.party?.me?.isReady) {
-              client.party.me.setReadiness(false);
+              client.party.me.setReadiness(false).catch((e) => console.log(e));;
             }
             if (timerstatus) {
               timerstatus = false;
@@ -432,19 +431,8 @@ setUpDClient();
   );
 
   client.on("party:member:left", async (left: PartyMember) => {
-    console.log(`member left: ${left.displayName}`);
-
-    if (config.logs.enable_logs === true) {
-      discordlog(
-        "[Logs] Party Members:",
-        `**${left.displayName}** has left.`,
-        0xffa500
-      );
-    } else return;
-
-    client.on("party:member:left", async (left: PartyMember) => {
-      console.log(`member left: ${left.displayName}`);
-      const party = client.party;
+    try {
+      console.log(`Member left: ${left.displayName}`);
 
       if (config.logs.enable_logs) {
         discordlog(
@@ -453,6 +441,8 @@ setUpDClient();
           0xffa500
         );
       }
+
+      const party = client.party;
       if (!party) {
         console.warn("No party instance available.");
         return;
@@ -460,6 +450,7 @@ setUpDClient();
 
       await party.fetch();
       const partySize = party.size;
+
       switch (partySize) {
         case 1:
           client.setStatus(
@@ -469,7 +460,7 @@ setUpDClient();
           await party.setPrivacy(PrivateParty).catch((e) => console.log(e));
 
           if (party.me?.isReady) {
-            party.me.setReadiness(false);
+            await party.me.setReadiness(false).catch((e) => console.log(e));;
           }
 
           if (timerstatus) {
@@ -482,7 +473,9 @@ setUpDClient();
         case 2:
         case 3:
         case 4:
-          party.chat.send(`${config.fortnite.join_message}\n Bot By Ryuk`).catch((e) => console.log(e));
+          party.chat
+            .send(`${config.fortnite.join_message}\n Bot By Ryuk`)
+            .catch((e) => console.log(e));
           client.setStatus(
             config.fortnite.inuse_status,
             config.fortnite.inuse_onlinetype
@@ -493,7 +486,9 @@ setUpDClient();
           console.warn(`Unexpected party size: ${partySize}`);
           break;
       }
-    });
+    } catch (e) {
+      console.log(e);
+    }
   });
 
   if (config.discord.run_discord_client === true) {
