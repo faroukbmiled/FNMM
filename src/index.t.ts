@@ -12,6 +12,7 @@ import fnbr, {
 } from "fnbr";
 import {
     discordlog,
+    UpdateCosmetics,
     // UpdateCosmetics,
     // findCosmetic,
     sleep,
@@ -496,6 +497,7 @@ class FortniteBot {
 (async () => {
     // testing multi bots in one instance
     const app: Express = ExpressApp;
+    UpdateCosmetics();
     const deviceauths: { accountId: string; deviceId: string; secret: string }[] = [
         {
             accountId: "",
