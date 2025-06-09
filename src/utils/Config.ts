@@ -71,7 +71,7 @@ export const deviceauths: Record<string, string | undefined> = {
 };
 
 export const PrivateParty: PartyPrivacy = {
-  partyType: "Private",
+  partyType: "FriendsOnly",
   inviteRestriction: "AnyMember",
   onlyLeaderFriendsCanJoin: true,
   presencePermission: "Anyone",

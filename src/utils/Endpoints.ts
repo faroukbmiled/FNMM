@@ -5,19 +5,19 @@ export default Object.freeze({
   LOGIN: "https://www.epicgames.com/id/api/login",
   LOGIN_EXCHANGE: "https://www.epicgames.com/id/api/exchange",
   OAUTH_TOKEN_CREATE:
-    "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token",
+    "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token",
   OAUTH_TOKEN_VERIFY:
-    "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/verify",
+    "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/verify",
   OAUTH_TOKEN_KILL:
-    "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/sessions/kill",
+    "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/sessions/kill",
   OAUTH_TOKEN_KILL_MULTIPLE:
     "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/sessions/kill",
   OAUTH_EXCHANGE:
-    "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/exchange",
+    "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/exchange",
   OAUTH_DEVICE_AUTH:
     "https://account-public-service-prod.ol.epicgames.com/account/api/public/account",
   OAUTH_DEVICE_CODE:
-    "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/deviceAuthorization",
+    "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/deviceAuthorization",
 
   // INITIAL SETUP
   INIT_EULA:
@@ -68,7 +68,7 @@ export default Object.freeze({
 
   // MATCHMAKING
   MATCHMAKING:
-    "https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/game/v2/matchmakingservice/ticket/player/",
+    "https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2/matchmakingservice/ticket/player/",
 
   // FRIENDS
   FRIENDS: "https://friends-public-service-prod.ol.epicgames.com/friends/api",

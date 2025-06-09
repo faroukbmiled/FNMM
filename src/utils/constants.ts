@@ -6,7 +6,8 @@ export const allowedPlaylists: readonly string[] = Object.freeze([
   "playlist_nobuildbr_squad",
   "playlist_nobuildbr_duo",
   "playlist_blastberrysquad",
-  "playlist_figmentsquad",
+  "playlist_figmentduo",
+  "playlist_figmentssquad"
 ]);
 
 export const websocketHeaders: Record<string, string> = Object.freeze({
