@@ -4,7 +4,7 @@
 ## ⚠️ Disclaimer ⚠️
 I currently have a partially working version that is unstable and may cause bots or party members to receive a temporary ban.
 This version will not be released until it reaches a stable state.
-This is due to issues with fnbr.js being broken at the moment — I’ve had to modify it to fix certain lobby-related issues.
+This is mostly due to issues with fnbr.js being broken at the moment — I’ve had to modify it to fix certain lobby-related issues.
 
 ## Overview
 An experimental Fortnite Matchmaking/Lobby bot, Powerd by [fnbr.js](https://github.com/fnbrjs/fnbr.js)
